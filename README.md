@@ -22,6 +22,8 @@ Cookie.set('status', 1);
 Cookie.del('token');
 // 5. 删除所有
 Cookie.del();
+// 6. 批量删除
+Cookie.del(['token', 'status']);
 ```
 
 
