@@ -47,17 +47,17 @@ class Cookie {
         document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
       } else if (type === 'array') {
         // 批量删除
-        let keys = key as string[];
-        keys.forEach((key) => {
-          document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
+        const keys = key as string[];
+        keys.forEach((_key) => {
+          document.cookie = `${_key}=0;expires=${expires.toUTCString()};path=/`;
         });
       }
     } else {
       // 清空所有cookie
       const keys = document.cookie.match(/[^ =;]+(?=\=)/g);
       if (keys) {
-        keys.forEach((key) => {
-          document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
+        keys.forEach((_key) => {
+          document.cookie = `${_key}=0;expires=${expires.toUTCString()};path=/`;
         });
       }
     }
