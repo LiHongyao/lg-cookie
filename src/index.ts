@@ -6,10 +6,15 @@ class Cookie {
    * @param {number} expireDays 过期时间
    */
   public static set(key: string, value: string | number, expireDays = 1) {
-    document.cookie = `${key}=${encodeURIComponent(value)};expires=${expireDays * 24 * 60 * 60 * 1000};path=/;`;
+    if (['string', 'number'].indexOf(typeof value) === -1) {
+      return;
+    }
+    document.cookie = `${key}=${encodeURIComponent(value)};expires=${new Date(
+      new Date().getTime() + expireDays * 24 * 60 * 60 * 1000,
+    ).toString()};path=/;`;
   }
   /**
-   * 读取cookie
+   * 读取cookie，如果key存在，则查询指定key所对应的cookie值，否则返回所有cookie值
    * @param {string} key 键
    */
   public static get<T>(key?: string) {
@@ -30,22 +35,33 @@ class Cookie {
     }
   }
   /**
-   * 删除cookie
+   * 删除cookie，如果key属性存在，则删除指定key对应的cookie值，否则清空cookie
    * @param {string} key 键
    */
-  public static del(key: string) {
-    const expires = new Date();
-    expires.setTime(expires.getTime() - 1);
-    const value = Cookie.get(key);
-    if (value != null) {
-      document.cookie = `${key}=${value};expires=${expires.toUTCString()};path=/`;
+  public static del(key?: string | string[]) {
+    const expires = new Date(0);
+    const type = Object.prototype.toString.call(key).slice(8, -1).toLowerCase();
+    if (key) {
+      if (type === 'string') {
+        // 删除指定cookie
+        document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
+      } else if (type === 'array') {
+        // 批量删除
+        let keys = key as string[];
+        keys.forEach((key) => {
+          document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
+        });
+      }
+    } else {
+      // 清空所有cookie
+      const keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+      if (keys) {
+        keys.forEach((key) => {
+          document.cookie = `${key}=0;expires=${expires.toUTCString()};path=/`;
+        });
+      }
     }
   }
 }
 
 export default Cookie;
-
-// Cookie.get();
-// Cookie.get('token');
-// Cookie.set('status', 1);
-// Cookie.del('token');
